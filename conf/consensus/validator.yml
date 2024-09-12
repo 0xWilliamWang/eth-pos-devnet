@@ -1,0 +1,4 @@
+accept-terms-of-use: true
+rpc: true
+rpc-host: 0.0.0.0
+# verbosity: trace

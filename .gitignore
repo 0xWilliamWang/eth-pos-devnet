@@ -1,6 +1,20 @@
-consensus/beacondata
-consensus/genesis.ssz
-consensus/validatordata
-execution/geth
-execution/geth.ipc
+# consensus/beacondata
+# consensus/genesis.ssz
+# consensus/validatordata
+# execution/geth
+# execution/geth.ipc
+l1-tmp-data
+l2-tmp-data
+b2test-data
 .idea/
+log*
+*.log
+tmp*
+*.help
+validators.json
+beacon-chain
+geth
+prysmctl
+validator
+*.csv
+*.prom

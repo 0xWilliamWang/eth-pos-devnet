@@ -1,0 +1,270 @@
+x-base: &base
+  pull_policy: always
+x-va: &va
+  image: gcr.io/prysmaticlabs/prysm/validator:latest
+
+x-cl: &cl
+  <<: *base
+  image: gcr.io/prysmaticlabs/prysm/beacon-chain:latest
+
+x-el: &el
+  <<: *base
+  image: ethereum/client-go:alltools-latest
+  env_file: el.env
+  entrypoint: 
+  - geth
+  depends_on:
+  - boot
+
+services:
+  boot:
+    image: ethereum/client-go:alltools-latest
+    entrypoint: 
+    - bootnode
+    command:
+    - -nodekey=/boot.key
+    - -verbosity=4
+    - -addr=0.0.0.0:30301
+    volumes:
+    - ./conf/execution/boot.key:/boot.key
+
+  el1:
+    <<: *el
+    command:
+    - --identity=node1
+
+    # env_file: el.env
+    # image: mcr.microsoft.com/devcontainers/go:1-1.21-bookworm
+    # entrypoint:
+    # - sleep 
+    # - infinity
+
+    ports:
+    - 8545:8545
+    volumes:
+    - ./l1-tmp-data/node1/execution:/root/.ethereum
+    - ./conf/execution:/app-conf
+    - ./conf/jwt/node1:/jwtsecret
+    - /ssd/code/org-ethereum/go-ethereum:/app
+
+  cl1:
+    <<: *cl
+    command:
+    - --config-file=/app-conf/beacon-chain.yml
+    - --suggested-fee-recipient=0xD81A4Fc737642864FE44f1B8b3AD08185a18cFeA
+    - --execution-endpoint=http://el1:8551
+    - --p2p-host-dns=cl1
+
+    # image: mcr.microsoft.com/devcontainers/go:1-1.21-bookworm
+    # entrypoint:
+    # - sleep 
+    # - infinity
+
+    ports:
+    - 3500:3500
+    depends_on:
+    - el1
+    volumes:
+    - ./l1-tmp-data/node1/consensus/beacon:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/jwt/node1:/jwtsecret
+    - ./conf/consensus/p2p-private-key/node1:/nodekey
+    - /ssd/code/org-prysmaticlabs/prysm:/app
+    - /ssd/code/my-monorepo:/host
+
+  va1:
+    <<: *va
+    command:
+    - --config-file=/app-conf/beacon-chain.yml
+    - --beacon-rpc-provider=cl1:4000
+    - --wallet-password-file=/app-conf/wallet.pw
+
+    depends_on:
+    - el1
+    volumes:
+    - ./l1-tmp-data/node1/consensus/validator:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/consensus/wallet1:/root/.eth2validators/prysm-wallet-v2/
+    - ./:/host
+
+  el2:
+    <<: *el
+    command:
+    - --identity=node2
+    volumes:
+    - ./l1-tmp-data/node2/execution:/root/.ethereum
+    - ./conf/execution:/app-conf
+    - ./conf/jwt/node2:/jwtsecret
+
+  cl2:
+    <<: *cl
+    command:
+    - --min-sync-peers=1
+    - --config-file=/app-conf/beacon-chain.yml
+    - --suggested-fee-recipient=0xDB4aCCCc98DEe076C92a986D4aAdaa19fC029C90
+    - --execution-endpoint=http://el2:8551
+    - --p2p-host-dns=cl2
+    - --peer=/dns4/cl1/tcp/13000/p2p/16Uiu2HAmLeoUgNt8cQ5E1ajHgR8smKnWeVoZY4Edqu6tN9Zj8Q1h
+    depends_on:
+    - el2
+    volumes:
+    - ./l1-tmp-data/node2/consensus/beacon:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/jwt/node2:/jwtsecret
+    - ./conf/consensus/p2p-private-key/node2:/nodekey
+
+  va2:
+    <<: *va
+    command:
+    - --config-file=/app-conf/beacon-chain.yml
+    - --beacon-rpc-provider=cl1:4000
+    - --wallet-password-file=/app-conf/wallet.pw
+    depends_on:
+    - el2
+    volumes:
+    - ./l1-tmp-data/node2/consensus/validator:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/consensus/wallet2:/root/.eth2validators/prysm-wallet-v2/
+
+  el3:
+    <<: *el
+    command:
+    - --identity=node3
+    volumes:
+    - ./l1-tmp-data/node3/execution:/root/.ethereum
+    - ./conf/execution:/app-conf
+    - ./conf/jwt/node3:/jwtsecret
+
+  cl3:
+    <<: *cl
+    command:
+    - --min-sync-peers=1
+    - --config-file=/app-conf/beacon-chain.yml
+    - --suggested-fee-recipient=0x985aE5d3d21055c9F6F1b56930AF8620C1005503
+    - --execution-endpoint=http://el3:8551
+    - --p2p-host-dns=cl3
+    - --peer=/dns4/cl1/tcp/13000/p2p/16Uiu2HAmLeoUgNt8cQ5E1ajHgR8smKnWeVoZY4Edqu6tN9Zj8Q1h
+    - --peer=/dns4/cl2/tcp/13000/p2p/16Uiu2HAm5nsnnE6SGQAQgM4EtjephsJa6QpnKnYJACZ9YVY6p3dk
+    depends_on:
+    - el3
+    volumes:
+    - ./l1-tmp-data/node3/consensus/beacon:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/jwt/node3:/jwtsecret
+    - ./conf/consensus/p2p-private-key/node3:/nodekey
+
+  va3:
+    <<: *va
+    command:
+    - --config-file=/app-conf/beacon-chain.yml
+    - --beacon-rpc-provider=cl3:4000
+    - --wallet-password-file=/app-conf/wallet.pw
+    depends_on:
+    - el3
+    volumes:
+    - ./l1-tmp-data/node3/consensus/validator:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/consensus/wallet3:/root/.eth2validators/prysm-wallet-v2/
+
+
+  el4:
+    <<: *el
+    command:
+    - --identity=node4
+    volumes:
+    - ./l1-tmp-data/node4/execution:/root/.ethereum
+    - ./conf/execution:/app-conf
+    - ./conf/jwt/node4:/jwtsecret
+
+  cl4:
+    <<: *cl
+    # entrypoint: 
+    # - sleep 
+    # - infinity
+    command:
+    - --min-sync-peers=1
+    - --config-file=/app-conf/beacon-chain.yml
+    - --suggested-fee-recipient=0xc42990bdb206D1675284D98081607EcEEbb3F108
+    - --execution-endpoint=http://el4:8551
+    - --p2p-host-dns=cl4
+    - --peer=/dns4/cl1/tcp/13000/p2p/16Uiu2HAmLeoUgNt8cQ5E1ajHgR8smKnWeVoZY4Edqu6tN9Zj8Q1h
+    - --peer=/dns4/cl2/tcp/13000/p2p/16Uiu2HAm5nsnnE6SGQAQgM4EtjephsJa6QpnKnYJACZ9YVY6p3dk
+    - --peer=/dns4/cl3/tcp/13000/p2p/16Uiu2HAm7JJDLMPM7ree9iG3oWEHTWGAS86XTax95qZ4HR5aGzQZ
+    depends_on:
+    - el4
+    volumes:
+    - ./l1-tmp-data/node4/consensus/beacon:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/jwt/node4:/jwtsecret
+    - ./conf/consensus/p2p-private-key/node4:/nodekey
+
+  va4:
+    <<: *va
+    command:
+    - --config-file=/app-conf/beacon-chain.yml
+    - --beacon-rpc-provider=cl4:4000
+    - --wallet-password-file=/app-conf/wallet.pw
+    depends_on:
+    - el4
+    volumes:
+    - ./l1-tmp-data/node4/consensus/validator:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/consensus/wallet4:/root/.eth2validators/prysm-wallet-v2/
+
+  el5:
+    <<: *el
+    # entrypoint:
+    # - sleep 
+    # - infinity
+    
+    command:
+    - --identity=node5
+    # - --syncmode=snap
+    labels:
+      name: node5
+      # geth_syncmode: snap
+    volumes:
+    - ./l1-tmp-data/node5/execution:/root/.ethereum
+    - ./conf/jwt/node5:/jwtsecret
+    - /ssd/code/my-monorepo:/host
+
+  cl5:
+    <<: *cl
+    command:
+    - --config-file=/app-conf/beacon-chain.yml
+    - --suggested-fee-recipient=0xc42990bdb206D1675284D98081607EcEEbb3F108
+    - --execution-endpoint=http://el5:8551
+    - --p2p-host-dns=cl5
+    - --min-sync-peers=1
+    - --peer=/dns4/cl1/tcp/13000/p2p/16Uiu2HAmLeoUgNt8cQ5E1ajHgR8smKnWeVoZY4Edqu6tN9Zj8Q1h
+    - --peer=/dns4/cl2/tcp/13000/p2p/16Uiu2HAm5nsnnE6SGQAQgM4EtjephsJa6QpnKnYJACZ9YVY6p3dk
+    - --peer=/dns4/cl3/tcp/13000/p2p/16Uiu2HAm7JJDLMPM7ree9iG3oWEHTWGAS86XTax95qZ4HR5aGzQZ
+    - --peer=/dns4/cl4/tcp/13000/p2p/16Uiu2HAmG2PxgFbQNULhtg7Aqv7cV4xwr52dYvTx4Q4Fh1d3GWwp
+    depends_on:
+    - el5
+    volumes:
+    - ./l1-tmp-data/node5/consensus/beacon:/root/.eth2
+    - ./conf/consensus/p2p-private-key/node5:/nodekey
+    - ./conf/consensus:/app-conf
+    - ./conf/jwt/node5:/jwtsecret
+
+  va5:
+    <<: *va
+    command:
+    - --config-file=/app-conf/beacon-chain.yml
+    - --beacon-rpc-provider=cl5:4000
+    - --wallet-password-file=/app-conf/wallet.pw
+    depends_on:
+    - el5
+    volumes:
+    - ./l1-tmp-data/node5/consensus/validator:/root/.eth2
+    - ./conf/consensus:/app-conf
+    - ./conf/consensus/wallet5:/root/.eth2validators/prysm-wallet-v2/
+
+networks:
+  default:
+    name: l1
+    # ipam:
+      # driver: default
+      # config:
+        # - subnet: 172.16.242.0/24

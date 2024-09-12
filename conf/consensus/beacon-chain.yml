@@ -1,0 +1,38 @@
+genesis-state: /app-conf/genesis.ssz
+chain-config-file: /app-conf/config.yml
+contract-deployment-block: 0
+chain-id: 25371
+rpc-host: 0.0.0.0
+grpc-gateway-host: 0.0.0.0
+accept-terms-of-use: true
+jwt-secret: /jwtsecret
+enable-debug-rpc-endpoints: true
+# min-sync-peers: 1
+subscribe-all-subnets: true
+monitoring-host: 0.0.0.0
+monitoring-port: 8080
+p2p-priv-key: /nodekey
+grpc-gateway-corsdomain: "*"
+slots-per-archive-point: 32
+
+# verbosity: trace
+# verbosity: debug
+
+# disable-staking-contract-check: true
+# force-clear-db: true
+# minimum-peers-per-subnet: 0
+# max-builder-consecutive-missed-slots: 10000
+# max-builder-epoch-missed-slots: 10000
+# attest-timely: true
+# api-timeout: 300
+# bootstrap-node: 
+# - enr:-MK4QKU71EAN2n2yPaEM_Yp5d8UlcICooi_nc5CWeK60O3sCKN0yqL5OdggI1e5GkuY8NS24xB2fQbg2xN5jFprfm6uGAZB7YXuPh2F0dG5ldHOIAAAAADAAAACEZXRoMpDQDELvIAAAk___________gmlkgnY0gmlwhKwTAASJc2VjcDI1NmsxoQN20TOk8o6sDzPiAXa9CeSS-mYfKh_OOy5N0_H3y_0xnIhzeW5jbmV0cw-DdGNwgjLIg3VkcIIu4A
+# - enr:-MK4QABYEoSe95RljViA8vVRBlH7701XkHw07EnjgJTiFITrSgkxGjHuxYQIB1dhCVHh7CISt16E0Etd-MGfBOpwVEeGAZB7YX6Qh2F0dG5ldHOIAAAwAAAAAACEZXRoMpDQDELvIAAAk___________gmlkgnY0gmlwhKwTAAiJc2VjcDI1NmsxoQKaA2uFMpQObLYKczKIh5EYRtzEqsEHp-YYo8xmu-AwI4hzeW5jbmV0cwCDdGNwgjLIg3VkcIIu4A
+# - enr:-MK4QI_2HhlK44oK3D6Tl4EAuZaXG_K8V2d1MJIt2c8q35SQJ3aR9w-lYEIw-29DUCMcmeFH0wpFxTsvAww7wKVNTLmGAZB7YYFZh2F0dG5ldHOIAAwAAAAAAACEZXRoMpDQDELvIAAAk___________gmlkgnY0gmlwhKwTAAqJc2VjcDI1NmsxoQKwaJDiRaHIPVK0eQPKzLslIrsJs9ornSoPr2pfbaihQohzeW5jbmV0cw-DdGNwgjLIg3VkcIIu4A
+# - enr:-MK4QJqsyBUYOKsxvDArp-HQ665gIojAnjIkZuviOkRAea2QF-jLpeNGYyxA4Kw2C3QbU89VydmZuMF16C_rw7-oikWGAZB7YYSUh2F0dG5ldHOIAADAAAAAAACEZXRoMpDQDELvIAAAk___________gmlkgnY0gmlwhKwTAA6Jc2VjcDI1NmsxoQMyDvQuUHJmWhTOxJSuf8U0yBDMHEDDNmA8Cm6ul9aad4hzeW5jbmV0cw-DdGNwgjLIg3VkcIIu4A
+# - enr:-MK4QAnvkt-lpsyLiwIQ2U4HvJywjC625eqsDSxPs-KD3aLjfGuDtHvPY0anJ6F5THOnt6A2oJWUICt2n3fCl1m0S-OGAZB7YYc6h2F0dG5ldHOIAAAAAAAAAGCEZXRoMpDQDELvIAAAk___________gmlkgnY0gmlwhKwTABCJc2VjcDI1NmsxoQMV9Qy9qHqbMBoWWKHtifY2y6qLuH1T8SfNhYChDGytX4hzeW5jbmV0cwCDdGNwgjLIg3VkcIIu4A
+# - /dns4/cl1/tcp/13000/p2p/16Uiu2HAmLeoUgNt8cQ5E1ajHgR8smKnWeVoZY4Edqu6tN9Zj8Q1h
+# - /dns4/cl2/tcp/13000/p2p/16Uiu2HAm5nsnnE6SGQAQgM4EtjephsJa6QpnKnYJACZ9YVY6p3dk
+# - /dns4/cl3/tcp/13000/p2p/16Uiu2HAm7JJDLMPM7ree9iG3oWEHTWGAS86XTax95qZ4HR5aGzQZ
+# - /dns4/cl4/tcp/13000/p2p/16Uiu2HAmG2PxgFbQNULhtg7Aqv7cV4xwr52dYvTx4Q4Fh1d3GWwp
+# - /dns4/cl5/tcp/13000/p2p/16Uiu2HAmE8hdpCw41WkTtgpWLLcRqfRNHaTsx3kkFfeMbSVQtFUa
